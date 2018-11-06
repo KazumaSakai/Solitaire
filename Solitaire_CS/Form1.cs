@@ -19,7 +19,15 @@ namespace Solitaire
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+            this.DoubleBuffered = true;
+        }
 
+        public static EventHandler TickUpdateEvents;
+        private void TickUpdate(object sender, EventArgs e)
+        {
+            if (TickUpdateEvents == null) return;
+            TickUpdateEvents.Invoke(sender, e);
         }
     }
 }

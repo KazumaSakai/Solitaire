@@ -17,7 +17,7 @@ namespace Solitaire
         /// <summary>
         /// テーブル上のカード
         /// </summary>
-        private List<(byte, bool)>[] tableCards;
+        private List<byte>[] tableCards;
         /// <summary>
         /// 上にあるカード
         /// </summary>
@@ -30,10 +30,10 @@ namespace Solitaire
         {
             tramp = new Tramp();
             tramp.Shuffle();
-            tableCards = new List<(byte, bool)>[7];
+            tableCards = new List<byte>[7];
             for (int i = 0; i < tableCards.Length; i++)
             {
-                tableCards[i] = new List<(byte, bool)>();
+                tableCards[i] = new List<byte>();
             }
             topCards = new List<byte>();
             Initialize();
@@ -52,7 +52,8 @@ namespace Solitaire
                 for (byte j = 0; j < (i + 3); j++)
                 {
                     bool isCardOpen = (i <= j);
-                    tableCards[i].Add((num, isCardOpen));
+                    tableCards[i].Add(num);
+                    tramp.cards[num].open = isCardOpen;
                     num++;
                 }
             }
@@ -72,12 +73,15 @@ namespace Solitaire
                 count = 0;
                 for (int i = 0; i < tableCards.Length; i++)
                 {
-                    if(tableCards[i].Count > len)
+                    byte index = tableCards[i][len];
+                    bool open = tramp.cards[tableCards[i][len]].open;
+
+                    if (tableCards[i].Count > len)
                     {
                         count++;
-                        if (tableCards[i][len].Item2)
+                        if (open)
                         {
-                            sb.Append(tramp.cards[tableCards[i][len].Item1]).Append("　");
+                            sb.Append(tramp.cards[index]).Append("　");
                         }
                         else
                         {
@@ -115,36 +119,75 @@ namespace Solitaire
 
         private void CreatePanel()
         {
-            basePanel = new Panel();
+            basePanel = new DoubleBufferPanel();
             basePanel.BackColor = System.Drawing.Color.Transparent;
             basePanel.Location = new System.Drawing.Point(12, 12);
             basePanel.Name = "SolitaireBasePanel";
-            basePanel.Size = new System.Drawing.Size(960, 537);
+            basePanel.Size = new System.Drawing.Size(624, 737);
             basePanel.TabIndex = 0;
 
             cardPanels = new Panel[52];
 
             for (int i = 0; i < cardPanels.Length; i++)
             {
-                cardPanels[i] = new Panel();
-
-                cardPanels[i].BackgroundImage = Solitaire_CS.Properties.Resources.z01;
-                cardPanels[i].BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-                cardPanels[i].Name = "panel2";
-                cardPanels[i].Size = new System.Drawing.Size(80, 120);
-                cardPanels[i].TabIndex = 0;
+                cardPanels[i] = tramp.cards[i].formPanel;
+                cardPanels[i].Name = i.ToString();
+                cardPanels[i].MouseDown += new MouseEventHandler(TakeCard);
+                cardPanels[i].MouseUp += new MouseEventHandler(ReleaseCard);
                 basePanel.Controls.Add(cardPanels[i]);
             }
             UpdateCards();
         }
+
+        byte dragCardIndex = 0;
+        int lastIndex = 0;
+        /// <summary>
+        /// カードをドラッグし始めた
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TakeCard(object sender, MouseEventArgs e)
+        {
+            dragCardIndex = byte.Parse((sender as Panel).Name);
+            if (!tramp.cards[dragCardIndex].open) return;
+
+            cardPanels[dragCardIndex].BackgroundImage = Solitaire_CS.Properties.Resources.z01;
+            Form1.TickUpdateEvents += new EventHandler(TakingCard);
+            lastIndex = ((Cursor.Position.X - basePanel.FindForm().Location.X - 30) / 85);
+            tableCards[lastIndex].RemoveAt(tableCards[lastIndex].Count - 1);
+        }
+        /// <summary>
+        /// カードをドラッグ中
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TakingCard(object sender, EventArgs e)
+        {
+            lastIndex = ((Cursor.Position.X - basePanel.FindForm().Location.X - 30) / 85);
+        }
+        /// <summary>
+        /// カードのドラッグを終えた
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ReleaseCard(object sender, MouseEventArgs e)
+        {
+            if (!tramp.cards[dragCardIndex].open) return;
+            cardPanels[dragCardIndex].BackgroundImage = tramp.cards[dragCardIndex].image;
+            Form1.TickUpdateEvents -= new EventHandler(TakingCard);
+
+            tableCards[lastIndex].Add(dragCardIndex);
+            UpdateCards();
+        }
+
         private void UpdateCards()
         {
             for (int i = 0; i < tableCards.Length; i++)
             {
                 for (int j = 0; j < tableCards[i].Count; j++)
                 {
-                    byte index = tableCards[i][j].Item1;
-                    bool open = tableCards[i][j].Item2;
+                    byte index = tableCards[i][j];
+                    bool open = tramp.cards[tableCards[i][j]].open;
 
                     cardPanels[index].Location = new System.Drawing.Point((12 + (i * 86)), (150 + (j * 30)));
                     cardPanels[index].BringToFront();
@@ -159,6 +202,10 @@ namespace Solitaire
                     }
                 }
             }
+        }
+        public void SizeChanged(object sender, EventArgs e)
+        {
+            basePanel.Size = new System.Drawing.Size((sender as Control).Size.Width - 42, (sender as Control).Size.Height - 64);
         }
     }
 }

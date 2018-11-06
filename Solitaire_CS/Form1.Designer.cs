@@ -28,25 +28,36 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.SuspendLayout();
+
+            //
+            //  Timer
+            //
+            timer = new System.Windows.Forms.Timer(this.components);
+            timer.Interval = 16;
+            timer.Tick += new System.EventHandler(TickUpdate);
+            timer.Start();
+
             // 
             // Form1
             // 
-            this.BackgroundImage = Solitaire_CS.Properties.Resources.SolitaireBackGroundImage;
-            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackgroundImage = global::Solitaire_CS.Properties.Resources.SolitaireBackGroundImage;
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(648, 761);
-
-            this.Name = "Solitaire";
+            this.DoubleBuffered = true;
+            this.Name = "Form1";
             this.Text = "Solitaire";
             this.Load += new System.EventHandler(this.Form1_Load);
-
             this.ResumeLayout(false);
-
         }
 
         #endregion
+
+
+        private System.Windows.Forms.Timer timer;
     }
 }
 
