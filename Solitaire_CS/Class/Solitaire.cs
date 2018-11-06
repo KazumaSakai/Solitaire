@@ -151,8 +151,8 @@ namespace Solitaire
             dragCardIndex = byte.Parse((sender as Panel).Name);
             if (!tramp.cards[dragCardIndex].open) return;
 
-            cardPanels[dragCardIndex].BackgroundImage = Solitaire_CS.Properties.Resources.z01;
             Form1.TickUpdateEvents += new EventHandler(TakingCard);
+
             lastIndex = ((Cursor.Position.X - basePanel.FindForm().Location.X - 30) / 85);
             tableCards[lastIndex].RemoveAt(tableCards[lastIndex].Count - 1);
         }
@@ -173,7 +173,7 @@ namespace Solitaire
         private void ReleaseCard(object sender, MouseEventArgs e)
         {
             if (!tramp.cards[dragCardIndex].open) return;
-            cardPanels[dragCardIndex].BackgroundImage = tramp.cards[dragCardIndex].image;
+
             Form1.TickUpdateEvents -= new EventHandler(TakingCard);
 
             tableCards[lastIndex].Add(dragCardIndex);
