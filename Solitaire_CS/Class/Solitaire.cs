@@ -141,6 +141,7 @@ namespace Solitaire
 
         byte dragCardIndex = 0;
         int lastIndex = 0;
+        int beforeIndex = 0;
         /// <summary>
         /// カードをドラッグし始めた
         /// </summary>
@@ -154,6 +155,8 @@ namespace Solitaire
             Form1.TickUpdateEvents += new EventHandler(TakingCard);
 
             lastIndex = ((Cursor.Position.X - basePanel.FindForm().Location.X - 30) / 85);
+            beforeIndex = lastIndex;
+
             tableCards[lastIndex].RemoveAt(tableCards[lastIndex].Count - 1);
         }
         /// <summary>
@@ -176,7 +179,12 @@ namespace Solitaire
 
             Form1.TickUpdateEvents -= new EventHandler(TakingCard);
 
-            tableCards[lastIndex].Add(dragCardIndex);
+            int index = tableCards[lastIndex][tableCards[lastIndex].Count - 1];
+            bool dragCardIsRed = (tramp.cards[dragCardIndex].mark == Card.Mark.diamond || tramp.cards[dragCardIndex].mark == Card.Mark.heart);
+            bool targetCardIsRed = (tramp.cards[index].mark == Card.Mark.diamond || tramp.cards[index].mark == Card.Mark.heart);
+
+            bool canAddTramp = (dragCardIsRed != targetCardIsRed) && ((tramp.cards[dragCardIndex].number) == tramp.cards[index].number - 1);
+            tableCards[canAddTramp ? lastIndex : beforeIndex].Add(dragCardIndex);
             UpdateCards();
         }
 
