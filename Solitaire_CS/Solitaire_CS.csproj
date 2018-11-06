@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{98BF5CB4-7905-41FD-8153-0012D4690184}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <RootNamespace>Solitaire_CS</RootNamespace>
     <AssemblyName>Solitaire_CS</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class\Card.cs" />
+    <Compile Include="Class\Solitaire.cs" />
     <Compile Include="Class\Trump.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -74,8 +75,13 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Interface\IDebugOutput.cs" />
+    <Compile Include="Interface\IFormPanel.cs" />
+    <Compile Include="Interface\IImage.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -84,6 +90,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -109,6 +116,177 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c01.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c02.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c03.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c04.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c05.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c06.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c07.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c08.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c09.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c10.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c11.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c12.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c13.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\d01.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\d02.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\d03.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\d04.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\d05.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\d06.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\d07.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\d08.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\d09.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\d10.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\d11.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\d12.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\d13.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\h01.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\h02.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\h03.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\h04.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\h05.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\h06.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\h07.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\h08.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\h09.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\h10.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\h11.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\h12.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\h13.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\s01.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\s02.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\s03.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\s04.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\s05.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\s06.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\s07.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\s08.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\s09.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\s10.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\s11.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\s12.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\s13.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\x01.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\x02.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\z01.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\z02.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SolitaireBackGroundImage.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

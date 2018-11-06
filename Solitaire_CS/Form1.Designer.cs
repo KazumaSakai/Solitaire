@@ -1,4 +1,4 @@
-﻿namespace Solitaire_CS
+﻿namespace Solitaire
 {
     partial class Form1
     {
@@ -28,10 +28,22 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.SuspendLayout();
+            // 
+            // Form1
+            // 
+            this.BackgroundImage = Solitaire_CS.Properties.Resources.SolitaireBackGroundImage;
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form1";
+            this.ClientSize = new System.Drawing.Size(648, 761);
+
+            this.Name = "Solitaire";
+            this.Text = "Solitaire";
+            this.Load += new System.EventHandler(this.Form1_Load);
+
+            this.ResumeLayout(false);
+
         }
 
         #endregion

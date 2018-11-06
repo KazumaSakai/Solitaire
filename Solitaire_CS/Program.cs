@@ -15,15 +15,14 @@ namespace Solitaire
         [STAThread]
         static void Main()
         {
-            Tramp tramp = new Tramp();
-
-            Console.ReadKey();
-
-            /*
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
-            */
+            Form1 form = new Form1();
+
+            Solitaire solitaire = new Solitaire();
+            form.Controls.Add(solitaire.formPanel);
+
+            Application.Run(form);
         }
     }
 }
