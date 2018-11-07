@@ -7,6 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Solitaire", "Solitaire_CS\S
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppLibrary", "CppLibrary\CppLibrary.vcxproj", "{39C71F9D-63E2-48F9-BA46-71C3AEFA174B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Diary", "Diary", "{34E2FDC8-316B-42C8-AEB3-FCE55EAE606E}"
+	ProjectSection(SolutionItems) = preProject
+		Diary.txt = Diary.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64

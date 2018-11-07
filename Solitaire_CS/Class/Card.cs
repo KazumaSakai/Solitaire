@@ -9,11 +9,15 @@ using System.Windows.Forms;
 
 namespace Solitaire
 {
-    public struct Card : IImage, IFormPanel
+    public class Card : IFormPanel, IDebugOutput
     {
         //
-        //  プロパティ
+        //  Field + Property
         //
+        #region ・Field + Property
+        /// <summary>
+        /// カードのマーク列挙型
+        /// </summary>
         public enum Mark
         {
             spade = 0,
@@ -21,9 +25,17 @@ namespace Solitaire
             clover,
             diamond
         }
+        /// <summary>
+        /// カードのマーク
+        /// </summary>
         public Mark mark;
+        /// <summary>
+        /// カードの数字
+        /// </summary>
         public int number;
-        private bool _open;
+        /// <summary>
+        /// カードが表か裏か
+        /// </summary>
         public bool open
         {
             get
@@ -39,7 +51,11 @@ namespace Solitaire
                 }
             }
         }
-        public Image image
+        private bool _open;
+        /// <summary>
+        /// カードの画像
+        /// </summary>
+        private Image image
         {
             get
             {
@@ -231,10 +247,32 @@ namespace Solitaire
                 }
             }
         }
+        #endregion
+
+
+        //
+        //  Method
+        //
+        #region ・Method
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="mark">マーク</param>
+        /// <param name="number">数字</param>
+        /// <param name="open">表か裏か</param>
+        public Card(Mark mark, int number, bool open)
+        {
+            this.mark = mark;
+            this.number = number;
+            this.open = open;
+        }
+        #endregion
+
 
         //
         //  IDebugOutput
         //
+        #region ・IDebugOutput
         private static string[] markString = { "S", "H", "C", "D" };
         private static string[] numberString = { " 0", " 1", " 2", " 3", " 4", " 5", " 6", " 7", " 8", " 9", "10", " J", " Q", " K" };
         public override string ToString()
@@ -242,10 +280,17 @@ namespace Solitaire
             StringBuilder sb = new StringBuilder();
             return sb.Append(markString[(int)mark]).Append(numberString[number]).ToString();
         }
+        public void DebugOutput()
+        {
+            Console.WriteLine(this.ToString());
+        }
+        #endregion
+
 
         //
         //  IFormPanel
         //
+        #region ・IFormPanel
         private Panel basePanel;
         public Panel formPanel
         {
@@ -260,48 +305,25 @@ namespace Solitaire
         }
         private void CreatePanel()
         {
-            
             basePanel = new Panel();
             basePanel.BackgroundImage = image;
             basePanel.BackgroundImageLayout = ImageLayout.Stretch;
             basePanel.Size = new Size(80, 120);
             basePanel.TabIndex = 0;
-            basePanel.MouseDown += new MouseEventHandler(ClickEnter);
+            basePanel.MouseEnter += new EventHandler(MouseHover);
+            basePanel.MouseLeave += new EventHandler(MouseLeave);
         }
         private void UpdatePanel()
         {
             if (basePanel == null) return;
             basePanel.BackgroundImage = image;
         }
-
-        //  Drag
-        private Point startPoint;
-        private Point dragDeltaPoint;
-        private bool dragging;
-        private void ClickEnter(object sender, MouseEventArgs e)
+        private void MouseHover(object sender, EventArgs e)
         {
-            if (!_open) return;
-            dragging = true;
-            startPoint = basePanel.Location;
-            dragDeltaPoint = new Point(Cursor.Position.X - basePanel.Location.X, Cursor.Position.Y - basePanel.Location.Y);
-            basePanel.BringToFront();
-            Form1.TickUpdateEvents += new EventHandler(ClickStay);
         }
-        private void ClickStay(object sender, EventArgs e)
+        private void MouseLeave(object sender, EventArgs e)
         {
-            if (dragging)
-            {
-                if ((Control.MouseButtons & MouseButtons.Left) == MouseButtons.Left)
-                {
-                    basePanel.Location = new Point(Cursor.Position.X - dragDeltaPoint.X, Cursor.Position.Y - dragDeltaPoint.Y);
-                }
-                else
-                {
-                    dragging = false;
-                    Form1.TickUpdateEvents -= new EventHandler(ClickStay);
-                    //basePanel.Location = startPoint;
-                }
-            }
         }
+        #endregion
     }
 }

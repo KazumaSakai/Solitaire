@@ -6,14 +6,26 @@ using System.Threading.Tasks;
 
 namespace Solitaire
 {
+    /// <summary>
+    /// トランプ
+    /// </summary>
     public class Tramp: IDebugOutput
     {
+        /// <summary>
+        /// トランプの所有するカード
+        /// </summary>
         public Card[] cards;
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public Tramp()
         {
             cards = new Card[52];
-            Sort();
+            for (int i = 0; i < cards.Length; i++)
+            {
+                cards[i] = new Card((Card.Mark)(i / 13), (i % 13) + 1, true);
+            }
         }
 
         /// <summary>

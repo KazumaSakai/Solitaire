@@ -22,12 +22,5 @@ namespace Solitaire
             this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
             this.DoubleBuffered = true;
         }
-
-        public static EventHandler TickUpdateEvents;
-        private void TickUpdate(object sender, EventArgs e)
-        {
-            if (TickUpdateEvents == null) return;
-            TickUpdateEvents.Invoke(sender, e);
-        }
     }
 }

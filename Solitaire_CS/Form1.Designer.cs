@@ -36,7 +36,6 @@
             //
             timer = new System.Windows.Forms.Timer(this.components);
             timer.Interval = 16;
-            timer.Tick += new System.EventHandler(TickUpdate);
             timer.Start();
 
             // 
@@ -57,7 +56,7 @@
         #endregion
 
 
-        private System.Windows.Forms.Timer timer;
+        public System.Windows.Forms.Timer timer;
     }
 }
 

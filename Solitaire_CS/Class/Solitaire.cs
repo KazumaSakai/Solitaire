@@ -104,6 +104,7 @@ namespace Solitaire
         //
         private Panel basePanel;
         private Panel[] cardPanels;
+        private Panel[] dropPanels;
 
         public Panel formPanel
         {
@@ -128,64 +129,80 @@ namespace Solitaire
 
             cardPanels = new Panel[52];
 
+            dropPanels = new Panel[7];
+            for (int i = 0; i < dropPanels.Length; i++)
+            {
+                dropPanels[i] = new Panel();
+                dropPanels[i].Location = new System.Drawing.Point(9 + (i * 86), 147);
+                dropPanels[i].Size = new System.Drawing.Size(86, basePanel.Height - 153);
+                dropPanels[i].BackColor = System.Drawing.Color.Transparent;
+                basePanel.Controls.Add(dropPanels[i]);
+            }
+
             for (int i = 0; i < cardPanels.Length; i++)
             {
                 cardPanels[i] = tramp.cards[i].formPanel;
                 cardPanels[i].Name = i.ToString();
-                cardPanels[i].MouseDown += new MouseEventHandler(TakeCard);
-                cardPanels[i].MouseUp += new MouseEventHandler(ReleaseCard);
+                cardPanels[i].MouseDown += new MouseEventHandler(DragCard);
                 basePanel.Controls.Add(cardPanels[i]);
+
+                tramp.cards[i].open = !tramp.cards[i].open;
             }
             UpdateCards();
         }
 
-        byte dragCardIndex = 0;
-        int lastIndex = 0;
-        int beforeIndex = 0;
+        private Card dragCard;
+        private System.Drawing.Point deltaPoint;
         /// <summary>
         /// カードをドラッグし始めた
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void TakeCard(object sender, MouseEventArgs e)
+        private void DragCard(object sender, MouseEventArgs e)
         {
-            dragCardIndex = byte.Parse((sender as Panel).Name);
-            if (!tramp.cards[dragCardIndex].open) return;
+            dragCard = FindCard(sender as Panel);
+            if (dragCard == null) return;
 
-            Form1.TickUpdateEvents += new EventHandler(TakingCard);
+            Cursor.Current = Cursors.Hand;
 
-            lastIndex = ((Cursor.Position.X - basePanel.FindForm().Location.X - 30) / 85);
-            beforeIndex = lastIndex;
+            dragCard.formPanel.FindForm().Controls.Add(dragCard.formPanel);
+            dragCard.formPanel.BringToFront();
 
-            tableCards[lastIndex].RemoveAt(tableCards[lastIndex].Count - 1);
+            deltaPoint = new System.Drawing.Point(dragCard.formPanel.Width / 2, dragCard.formPanel.Height / 2);
+            (basePanel.FindForm() as Form1).timer.Tick += new EventHandler(Dragging);
         }
-        /// <summary>
-        /// カードをドラッグ中
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void TakingCard(object sender, EventArgs e)
+        private void Dragging(object sender, EventArgs e)
         {
-            lastIndex = ((Cursor.Position.X - basePanel.FindForm().Location.X - 30) / 85);
+            if((Control.MouseButtons & MouseButtons.Left) == MouseButtons.Left)
+            {
+                dragCard.formPanel.Location = dragCard.formPanel.Parent.PointToClient(new System.Drawing.Point(Cursor.Position.X - deltaPoint.X, Cursor.Position.Y - deltaPoint.Y));
+            }
+            else
+            {
+                dragCard.formPanel.SendToBack();
+                Panel newParentPanel = basePanel.GetChildAtPoint(basePanel.PointToClient(Cursor.Position), GetChildAtPointSkip.None) as Panel;
+                if(newParentPanel != null)
+                {
+                    newParentPanel.Controls.Add(dragCard.formPanel);
+                    dragCard.formPanel.Location = new System.Drawing.Point(0, 30);
+                }
+
+                Cursor.Current = Cursors.Default;
+                dragCard = null;
+                (basePanel.FindForm() as Form1).timer.Tick -= new EventHandler(Dragging);
+            }
         }
-        /// <summary>
-        /// カードのドラッグを終えた
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ReleaseCard(object sender, MouseEventArgs e)
+        private Card FindCard(Panel panel)
         {
-            if (!tramp.cards[dragCardIndex].open) return;
-
-            Form1.TickUpdateEvents -= new EventHandler(TakingCard);
-
-            int index = tableCards[lastIndex][tableCards[lastIndex].Count - 1];
-            bool dragCardIsRed = (tramp.cards[dragCardIndex].mark == Card.Mark.diamond || tramp.cards[dragCardIndex].mark == Card.Mark.heart);
-            bool targetCardIsRed = (tramp.cards[index].mark == Card.Mark.diamond || tramp.cards[index].mark == Card.Mark.heart);
-
-            bool canAddTramp = (dragCardIsRed != targetCardIsRed) && ((tramp.cards[dragCardIndex].number) == tramp.cards[index].number - 1);
-            tableCards[canAddTramp ? lastIndex : beforeIndex].Add(dragCardIndex);
-            UpdateCards();
+            if (panel == null) return null;
+            for (int i = 0; i < cardPanels.Length; i++)
+            {
+                if(cardPanels[i] == panel)
+                {
+                    return tramp.cards[i];
+                }
+            }
+            return null;
         }
 
         private void UpdateCards()
@@ -195,19 +212,9 @@ namespace Solitaire
                 for (int j = 0; j < tableCards[i].Count; j++)
                 {
                     byte index = tableCards[i][j];
-                    bool open = tramp.cards[tableCards[i][j]].open;
 
                     cardPanels[index].Location = new System.Drawing.Point((12 + (i * 86)), (150 + (j * 30)));
                     cardPanels[index].BringToFront();
-
-                    if(open)
-                    {
-                        cardPanels[index].BackgroundImage = tramp.cards[index].image;
-                    }
-                    else
-                    {
-                        cardPanels[index].BackgroundImage = Solitaire_CS.Properties.Resources.z01;
-                    }
                 }
             }
         }

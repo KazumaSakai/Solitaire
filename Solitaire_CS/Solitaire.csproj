@@ -79,7 +79,6 @@
     </Compile>
     <Compile Include="Interface\IDebugOutput.cs" />
     <Compile Include="Interface\IFormPanel.cs" />
-    <Compile Include="Interface\IImage.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
