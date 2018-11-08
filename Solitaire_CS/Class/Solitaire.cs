@@ -58,7 +58,34 @@ namespace Solitaire
                 }
             }
         }
-        
+
+        /// <summary>
+        /// カードを移動する
+        /// </summary>
+        /// <param name="targetIndex">移動先の列のインデックス</param>
+        /// <param name="moveIndex">移動する列のインデックス</param>
+        /// <param name="length">移動する枚数</param>
+        public void MoveCard(int targetIndex, int moveIndex, int length)
+        {
+            Console.WriteLine("{0} : {1} : {2}", targetIndex, moveIndex, length);
+            byte[] moveCards = new byte[length];
+            int startIndex = tableCards[moveIndex].Count - 1;
+            length--;
+            for (int i = 0; i < moveCards.Length; i++)
+            {
+                moveCards[length] = tableCards[moveIndex][startIndex];
+                tableCards[moveIndex].RemoveAt(startIndex);
+                startIndex--;
+                length--;
+            }
+            for (int i = 0; i < moveCards.Length; i++)
+            {
+                tableCards[targetIndex].Add(moveCards[i]);
+                tramp.cards[moveCards[i]].open = false;
+            }
+            UpdateCards();
+        }
+
         /// <summary>
         /// デバッグ出力
         /// </summary>
@@ -106,6 +133,9 @@ namespace Solitaire
         private Panel[] cardPanels;
         private Panel[] dropPanels;
 
+        /// <summary>
+        /// このクラスのフォーム
+        /// </summary>
         public Panel formPanel
         {
             get
@@ -118,6 +148,9 @@ namespace Solitaire
             }
         }
 
+        /// <summary>
+        /// パネルを作成した
+        /// </summary>
         private void CreatePanel()
         {
             basePanel = new DoubleBufferPanel();
@@ -151,8 +184,14 @@ namespace Solitaire
             UpdateCards();
         }
 
+        /// <summary>
+        /// ドラッグしているカード
+        /// </summary>
         private Card dragCard;
-        private System.Drawing.Point deltaPoint;
+        /// <summary>
+        /// ドラックしているコントロールの中央
+        /// </summary>
+        private System.Drawing.Point centerPoint;
         /// <summary>
         /// カードをドラッグし始めた
         /// </summary>
@@ -168,30 +207,49 @@ namespace Solitaire
             dragCard.formPanel.FindForm().Controls.Add(dragCard.formPanel);
             dragCard.formPanel.BringToFront();
 
-            deltaPoint = new System.Drawing.Point(dragCard.formPanel.Width / 2, dragCard.formPanel.Height / 2);
+            centerPoint = new System.Drawing.Point(dragCard.formPanel.Width / 2, dragCard.formPanel.Height / 2);
             (basePanel.FindForm() as Form1).timer.Tick += new EventHandler(Dragging);
         }
+        /// <summary>
+        /// カードをドラッグ中
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Dragging(object sender, EventArgs e)
         {
             if((Control.MouseButtons & MouseButtons.Left) == MouseButtons.Left)
             {
-                dragCard.formPanel.Location = dragCard.formPanel.Parent.PointToClient(new System.Drawing.Point(Cursor.Position.X - deltaPoint.X, Cursor.Position.Y - deltaPoint.Y));
+                dragCard.formPanel.Location = dragCard.formPanel.Parent.PointToClient(new System.Drawing.Point(Cursor.Position.X - centerPoint.X, Cursor.Position.Y - centerPoint.Y));
             }
             else
             {
-                dragCard.formPanel.SendToBack();
-                Panel newParentPanel = basePanel.GetChildAtPoint(basePanel.PointToClient(Cursor.Position), GetChildAtPointSkip.None) as Panel;
-                if(newParentPanel != null)
-                {
-                    newParentPanel.Controls.Add(dragCard.formPanel);
-                    dragCard.formPanel.Location = new System.Drawing.Point(0, 30);
-                }
-
-                Cursor.Current = Cursors.Default;
-                dragCard = null;
-                (basePanel.FindForm() as Form1).timer.Tick -= new EventHandler(Dragging);
+                Drop();
             }
         }
+        /// <summary>
+        /// カードをドロップした
+        /// </summary>
+        private void Drop()
+        {
+            dragCard.formPanel.SendToBack();
+            Panel newParentPanel = basePanel.GetChildAtPoint(basePanel.PointToClient(Cursor.Position)) as Panel;
+            if (newParentPanel != null)
+            {
+                newParentPanel.Controls.Add(dragCard.formPanel);
+                dragCard.formPanel.Location = new System.Drawing.Point(0, 30);
+                (int, int) cardPos = FindPos(dragCard);
+                MoveCard(FindLine(newParentPanel), cardPos.Item1, cardPos.Item2);
+            }
+
+            Cursor.Current = Cursors.Default;
+            dragCard = null;
+            (basePanel.FindForm() as Form1).timer.Tick -= new EventHandler(Dragging);
+        }
+        /// <summary>
+        /// カードをパネルから探す
+        /// </summary>
+        /// <param name="panel">パネル</param>
+        /// <returns>カードクラス</returns>
         private Card FindCard(Panel panel)
         {
             if (panel == null) return null;
@@ -204,7 +262,46 @@ namespace Solitaire
             }
             return null;
         }
+        /// <summary>
+        /// 列をパネルから探す
+        /// </summary>
+        /// <param name="panel">パネル</param>
+        /// <returns></returns>
+        private int FindLine(Panel panel)
+        {
+            if (panel == null) return 0;
+            for (int i = 0; i < dropPanels.Length; i++)
+            {
+                if (dropPanels[i] == panel)
+                {
+                    return i;
+                }
+            }
+            return 0;
+        }
+        /// <summary>
+        /// カードから位置を探す
+        /// </summary>
+        /// <param name="card">カード</param>
+        /// <returns></returns>
+        private (int, int) FindPos(Card card)
+        {
+            for (int i = 0; i < tableCards.Length; i++)
+            {
+                for (int j = 0; j < tableCards[i].Count; j++)
+                {
+                    if (tramp.cards[tableCards[i][j]] == card)
+                    {
+                        return (i, tableCards[i].Count - j);
+                    }
+                }
+            }
+            return (0, 0);
+        }
 
+        /// <summary>
+        /// カードの描写を更新する
+        /// </summary>
         private void UpdateCards()
         {
             for (int i = 0; i < tableCards.Length; i++)
@@ -213,11 +310,17 @@ namespace Solitaire
                 {
                     byte index = tableCards[i][j];
 
-                    cardPanels[index].Location = new System.Drawing.Point((12 + (i * 86)), (150 + (j * 30)));
+                    dropPanels[i].Controls.Add(cardPanels[index]);
+                    cardPanels[index].Location = new System.Drawing.Point(0, (j * 30));
                     cardPanels[index].BringToFront();
                 }
             }
         }
+        /// <summary>
+        /// フォームのサイズが変更されたとき
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void SizeChanged(object sender, EventArgs e)
         {
             basePanel.Size = new System.Drawing.Size((sender as Control).Size.Width - 42, (sender as Control).Size.Height - 64);
