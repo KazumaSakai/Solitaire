@@ -46,8 +46,8 @@ namespace Solitaire
             {
                 if(value != _open)
                 {
-                    UpdatePanel();
                     _open = value;
+                    UpdatePanel();
                 }
             }
         }
