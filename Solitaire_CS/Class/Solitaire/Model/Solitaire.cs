@@ -22,6 +22,10 @@ namespace Solitaire
         public System.Drawing.Point[] cardPoint;
 
         /// <summary>
+        /// 開いているカード
+        /// </summary>
+        public Card openStackCard;
+        /// <summary>
         /// テーブル上のカード
         /// </summary>
         public List<Card>[] tableCards;
@@ -77,7 +81,7 @@ namespace Solitaire
             {
                 Card card = tramp.cards[i];
 
-                System.Drawing.Point point = new System.Drawing.Point(-1, 0);
+                System.Drawing.Point point = new System.Drawing.Point(-2, 0);
                 cardPoint[card.index] = point;
 
                 stackCards.Add(card);
@@ -96,32 +100,75 @@ namespace Solitaire
         /// <returns>つかめたかの結果</returns>
         public bool GrabCard(Card card)
         {
-            if (card == null || !card.open) return false;
+            if (card == null) return false;
+            if (!card.open)
+            {
+                if(cardPoint[card.index].X == -2)
+                {
+                    OpenStackCard();
+                    return false;
+                }
+                else
+                {
+                    return false;
+                }
+            }
 
             System.Drawing.Point point = cardPoint[card.index];
 
-            List<Card> line = tableCards[point.X];
-            for (int i = point.Y + 1; i < line.Count; i++)
+            if(point.X > 0)
             {
-                Card nextCard = line[i];
+                List<Card> line = tableCards[point.X];
+                for (int i = point.Y + 1; i < line.Count; i++)
+                {
+                    Card nextCard = line[i];
 
-                if(!CanStackCard(card, nextCard)) return false;
-            
-                card = nextCard;
+                    if (!CanStackCard(card, nextCard)) return false;
+
+                    card = nextCard;
+                }
+
+                grabCards = new Card[line.Count - point.Y];
+                for (int i = 0; i < line.Count - point.Y; i++)
+                {
+                    grabCards[i] = line[point.Y + i];
+                }
             }
-
-            grabCards = new Card[line.Count - point.Y];
-            for (int i = 0; i < line.Count - point.Y; i++)
+            else
             {
-                grabCards[i] = line[point.Y + i];
+                grabCards = new Card[]{ card };
             }
 
             basePanel.GrabCard(grabCards);
 
-            Console.WriteLine("GrabCard : {0}", card);
-
             return true;
         }
+        /// <summary>
+        /// スタックしてあるカードを開く
+        /// </summary>
+        /// <param name="card"></param>
+        public void OpenStackCard()
+        {
+            if (stackCards.Count == 0) return;
+
+            Card topStackCard = stackCards[0];
+
+            stackCards.Remove(topStackCard);
+            cardPoint[topStackCard.index] = new System.Drawing.Point(-1, 0);
+            basePanel.UpdateCard(topStackCard);
+            topStackCard.open = true;
+
+            if (openStackCard != null)
+            {
+                stackCards.Add(openStackCard);
+                cardPoint[openStackCard.index] = new System.Drawing.Point(-2, 0);
+                basePanel.UpdateCard(openStackCard);
+                openStackCard.open = false;
+            }
+
+            openStackCard = topStackCard;
+        }
+
         /// <summary>
         /// カードを重ねられるか
         /// </summary>
@@ -169,20 +216,35 @@ namespace Solitaire
                 }
             }
 
-            List<Card> line = tableCards[cardPoint[grabCards[0].index].X];
+            System.Drawing.Point cardPoint = this.cardPoint[grabCards[0].index];
             List<Card> newLine = tableCards[lineIndex];
-            for (int i = 0; i < grabCards.Length; i++)
+            if (cardPoint.X > 0)
             {
-                Card card = grabCards[i];
+                List<Card> line = tableCards[cardPoint.X];
+                for (int i = 0; i < grabCards.Length; i++)
+                {
+                    Card card = grabCards[i];
 
-                System.Drawing.Point point = new System.Drawing.Point(lineIndex, newLine.Count);
-                cardPoint[card.index] = point;
-                line.Remove(card);
-                newLine.Add(card);
-            
-                basePanel.UpdateCard(card);
+                    System.Drawing.Point point = new System.Drawing.Point(lineIndex, newLine.Count);
+                    this.cardPoint[card.index] = point;
+                    line.Remove(card);
+                    newLine.Add(card);
+
+                    basePanel.UpdateCard(card);
+                }
+                if (line.Count > 0) line.Last().open = true;
             }
-            if (line.Count > 0) line.Last().open = true;
+            else
+            {
+                Card card = grabCards[0];
+                System.Drawing.Point point = new System.Drawing.Point(lineIndex, newLine.Count);
+                this.cardPoint[card.index] = point;
+                openStackCard = null;
+                newLine.Add(card);
+                basePanel.UpdateCard(card);
+
+                OpenStackCard();
+            }
 
             grabCards = null;
             return true;

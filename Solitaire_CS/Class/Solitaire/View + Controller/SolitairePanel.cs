@@ -92,13 +92,19 @@ namespace Solitaire
         {
             System.Drawing.Point point = model.cardPoint[card.index];
 
-            if(point.X < 0)
+            switch (point.X)
             {
-                card.formPanel.Location = new System.Drawing.Point(12, 12);
-            }
-            else
-            {
-                card.formPanel.Location = new System.Drawing.Point(12 + (84 * point.X), 150 + (30 * point.Y));
+                case -2:
+                    card.formPanel.Location = new System.Drawing.Point(12, 12);
+                    break;
+
+                case -1:
+                    card.formPanel.Location = new System.Drawing.Point(96, 12);
+                    break;
+
+                default:
+                    card.formPanel.Location = new System.Drawing.Point(12 + (84 * point.X), 150 + (30 * point.Y));
+                    break;
             }
             if (toFront) card.formPanel.BringToFront();
         }
