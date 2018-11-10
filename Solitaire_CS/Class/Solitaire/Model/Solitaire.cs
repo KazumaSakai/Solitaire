@@ -117,6 +117,9 @@ namespace Solitaire
             }
 
             basePanel.GrabCard(grabCards);
+
+            Console.WriteLine("GrabCard : {0}", card);
+
             return true;
         }
         /// <summary>
@@ -140,16 +143,30 @@ namespace Solitaire
         /// <returns></returns>
         public bool DropCard(int lineIndex)
         {
-            if (lineIndex < 0 || lineIndex >= tableCards.Length) return false; 
-
-            Card finalCard = tableCards[lineIndex].Last();
-            if (!CanStackCard(finalCard, grabCards[0]))
+            if (grabCards == null) return false;
+        
+            if (lineIndex < 0 || lineIndex >= tableCards.Length)
             {
                 for (int i = 0; i < grabCards.Length; i++)
                 {
                     basePanel.UpdateCard(grabCards[i]);
                 }
+                grabCards = null;
                 return false;
+            }
+
+            if(tableCards[lineIndex].Count > 0)
+            {
+                Card finalCard = tableCards[lineIndex].Last();
+                if (!CanStackCard(finalCard, grabCards[0]))
+                {
+                    for (int i = 0; i < grabCards.Length; i++)
+                    {
+                        basePanel.UpdateCard(grabCards[i]);
+                    }
+                    grabCards = null;
+                    return false;
+                }
             }
 
             List<Card> line = tableCards[cardPoint[grabCards[0].index].X];
@@ -161,16 +178,18 @@ namespace Solitaire
                 System.Drawing.Point point = new System.Drawing.Point(lineIndex, newLine.Count);
                 cardPoint[card.index] = point;
                 line.Remove(card);
-                line.Add(card);
+                newLine.Add(card);
             
                 basePanel.UpdateCard(card);
             }
+            if (line.Count > 0) line.Last().open = true;
 
+            grabCards = null;
             return true;
         }
 
         //
-        //  View
+        //  View + Controller
         //
         private SolitairePanel basePanel;
         /// <summary>

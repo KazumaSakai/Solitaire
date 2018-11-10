@@ -40,6 +40,8 @@ namespace Solitaire
         public void GrabCard(Card[] dragCards)
         {
             dragPanel.Size = new System.Drawing.Size(80, 90 + (30 * (dragCards.Length)));
+            grabPoint = new System.Drawing.Point(40, 30);
+            MoveDragCard();
             dragPanel.BringToFront();
 
             for (int i = 0; i < dragCards.Length; i++)
@@ -51,10 +53,8 @@ namespace Solitaire
             }
 
             Cursor.Current = Cursors.Hand;
-            grabPoint = new System.Drawing.Point(40, 30);
-            (this.FindForm() as Form1).timer.Tick += dragEventHandler;
+            (this.FindForm() as MainForm).timer.Tick += dragEventHandler;
 
-            MoveDragCard();
         }
         public void DragCard()
         {
@@ -65,7 +65,7 @@ namespace Solitaire
             else
             {
                 DropCard();
-                (this.FindForm() as Form1).timer.Tick -= dragEventHandler;
+                (this.FindForm() as MainForm).timer.Tick -= dragEventHandler;
             }
         }
         public void MoveDragCard()
@@ -175,6 +175,7 @@ namespace Solitaire
                     panel.Size = new System.Drawing.Size(86, this.Height - 153);
                 
                     linePanels[i] = panel;
+                    this.Controls.Add(panel);
                 }
             }
 
@@ -185,14 +186,18 @@ namespace Solitaire
             /// <returns></returns>
             public int DropedLine(System.Drawing.Point point)
             {
+                this.Visible = true;
+                Control hitControl = this.GetChildAtPoint(this.PointToClient(Cursor.Position));
                 for (int i = 0; i < linePanels.Length; i++)
                 {
-                    Panel panel = linePanels[i];
-                    if(panel.ClientRectangle.Contains(panel.PointToClient(point)))
+                    if(hitControl == linePanels[i])
                     {
+                        linePanels[i].Visible = false;
+                        this.Visible = false;
                         return i;
                     }
                 }
+                this.Visible = false;
                 return -1;
             }
         }

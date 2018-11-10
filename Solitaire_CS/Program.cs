@@ -17,7 +17,7 @@ namespace Solitaire
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Form1 form = new Form1();
+            MainForm form = new MainForm();
 
             Solitaire solitaire = new Solitaire();
             form.Controls.Add(solitaire.formPanel);
