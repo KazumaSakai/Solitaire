@@ -16,6 +16,10 @@ namespace Solitaire
         //
         #region ・Field + Property
         /// <summary>
+        /// カードのインデックス
+        /// </summary>
+        public int index;
+        /// <summary>
         /// カードのマーク列挙型
         /// </summary>
         public enum Mark
@@ -260,8 +264,9 @@ namespace Solitaire
         /// <param name="mark">マーク</param>
         /// <param name="number">数字</param>
         /// <param name="open">表か裏か</param>
-        public Card(Mark mark, int number, bool open)
+        public Card(int index, Mark mark, int number, bool open)
         {
+            this.index = index;
             this.mark = mark;
             this.number = number;
             this.open = open;

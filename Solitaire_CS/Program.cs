@@ -21,7 +21,6 @@ namespace Solitaire
 
             Solitaire solitaire = new Solitaire();
             form.Controls.Add(solitaire.formPanel);
-            form.SizeChanged += new EventHandler(solitaire.SizeChanged);
 
             Application.Run(form);
         }

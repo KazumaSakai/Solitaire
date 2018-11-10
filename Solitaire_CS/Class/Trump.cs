@@ -24,7 +24,7 @@ namespace Solitaire
             cards = new Card[52];
             for (int i = 0; i < cards.Length; i++)
             {
-                cards[i] = new Card((Card.Mark)(i / 13), (i % 13) + 1, true);
+                cards[i] = new Card(i, (Card.Mark)(i / 13), (i % 13) + 1, true);
             }
         }
 
@@ -53,6 +53,28 @@ namespace Solitaire
                 cards[index] = cards[0];
                 cards[0] = changeCard;
             }
+
+            for(int i = 0; i < cards.Length; i++)
+            {
+                cards[i].index = i;
+            }
+        }
+
+        /// <summary>
+        /// カードのインデックスを探す
+        /// </summary>
+        /// <param name="card">探すカード</param>
+        /// <returns>インデックス</returns>
+        public int FindCardIndex(Card card)
+        {
+            for (int i = 0; i < cards.Length; i++)
+            {
+                if (cards[i] == card)
+                {
+                    return i;
+                }
+            }
+            return -1;
         }
 
         /// <summary>
