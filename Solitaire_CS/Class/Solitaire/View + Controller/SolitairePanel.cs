@@ -128,7 +128,6 @@ namespace Solitaire
         public class CardsBasePanel : Panel
         {
             private Solitaire model;
-            private EmptyCard stackCard_Empty;
 
             public CardsBasePanel(Solitaire model)
             {
@@ -150,9 +149,15 @@ namespace Solitaire
                     this.Controls.Add(cardPanel);
                 }
 
-                stackCard_Empty = new EmptyCard(new System.Drawing.Point(12, 12));
-                stackCard_Empty.MouseDown += new MouseEventHandler((object sender, MouseEventArgs e) => ClickStackCardEmpty());
-                this.Controls.Add(stackCard_Empty);
+                EmptyCard emptyCard = new EmptyCard(new System.Drawing.Point(12, 12));
+                emptyCard.MouseDown += new MouseEventHandler((object sender, MouseEventArgs e) => ClickStackCardEmpty());
+                this.Controls.Add(emptyCard);
+
+                for (int i = 0; i < model.tableCards.Length; i++)
+                {
+                    emptyCard = new EmptyCard(new System.Drawing.Point(12 + (84 * i), 150));
+                    this.Controls.Add(emptyCard);
+                }
             }
 
             private void ClickCardEvent(Card card)
