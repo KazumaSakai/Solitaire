@@ -247,12 +247,10 @@ namespace Solitaire
                 Card card = grabCards[0];
                 System.Drawing.Point point = new System.Drawing.Point(lineIndex, newLine.Count);
                 this.cardPoint[card.index] = point;
+                openedStackCards.Remove(card);
                 newLine.Add(card);
                 basePanel.UpdateCard(card);
-
-                OpenStackCard();
             }
-
 
             grabCards = null;
             return true;

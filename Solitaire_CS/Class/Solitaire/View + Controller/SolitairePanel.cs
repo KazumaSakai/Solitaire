@@ -166,7 +166,6 @@ namespace Solitaire
             }
             private void ClickStackCardEmpty()
             {
-                Console.WriteLine("Click");
                 model.OpenStackCard();
             }
 
