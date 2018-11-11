@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Solitaire_CS.Properties {
+namespace Solitaire {
     using System;
     
     
@@ -316,6 +316,16 @@ namespace Solitaire_CS.Properties {
         internal static System.Drawing.Bitmap d13 {
             get {
                 object obj = ResourceManager.GetObject("d13", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static System.Drawing.Bitmap empty {
+            get {
+                object obj = ResourceManager.GetObject("empty", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

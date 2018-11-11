@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Solitaire_CS.Properties
+namespace Solitaire
 {
 
 

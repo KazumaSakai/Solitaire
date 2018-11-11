@@ -36,7 +36,6 @@ namespace Solitaire
             this.dragEventHandler = new EventHandler((object sender, EventArgs e) => DragCard());
         }
 
-
         public void GrabCard(Card[] dragCards)
         {
             dragPanel.Size = new System.Drawing.Size(80, 90 + (30 * (dragCards.Length)));
@@ -129,6 +128,7 @@ namespace Solitaire
         public class CardsBasePanel : Panel
         {
             private Solitaire model;
+            private EmptyCard stackCard_Empty;
 
             public CardsBasePanel(Solitaire model)
             {
@@ -149,11 +149,32 @@ namespace Solitaire
                     cardPanel.MouseDown += new MouseEventHandler((object sender, MouseEventArgs e) => ClickCardEvent(card));
                     this.Controls.Add(cardPanel);
                 }
+
+                stackCard_Empty = new EmptyCard(new System.Drawing.Point(12, 12));
+                stackCard_Empty.MouseDown += new MouseEventHandler((object sender, MouseEventArgs e) => ClickStackCardEmpty());
+                this.Controls.Add(stackCard_Empty);
             }
 
             private void ClickCardEvent(Card card)
             {
                 model.GrabCard(card);
+            }
+            private void ClickStackCardEmpty()
+            {
+                Console.WriteLine("Click");
+                model.OpenStackCard();
+            }
+
+            public class EmptyCard : Panel
+            {
+                public EmptyCard(System.Drawing.Point point)
+                {
+                    this.BackgroundImage = Resources.empty;
+                    this.BackgroundImageLayout = ImageLayout.Stretch;
+                    this.Size = new System.Drawing.Size(80, 120);
+                    this.Location = point;
+                    this.TabIndex = 0;
+                }
             }
         }
         public class DropPanel : Panel

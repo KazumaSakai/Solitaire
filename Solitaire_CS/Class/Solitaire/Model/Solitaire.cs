@@ -22,17 +22,17 @@ namespace Solitaire
         public System.Drawing.Point[] cardPoint;
 
         /// <summary>
-        /// 開いているカード
-        /// </summary>
-        public Card openStackCard;
-        /// <summary>
         /// テーブル上のカード
         /// </summary>
         public List<Card>[] tableCards;
         /// <summary>
-        /// 上にあるカード
+        /// 左上にあるカード
         /// </summary>
         public List<Card> stackCards;
+        /// <summary>
+        /// 左上にある既に開かれたカード
+        /// </summary>
+        public List<Card> openedStackCards;
 
         /// <summary>
         /// コンストラクタ
@@ -47,10 +47,10 @@ namespace Solitaire
             {
                 tableCards[i] = new List<Card>();
             }
-            stackCards = new List<Card>();
+            stackCards = new List<Card>(tramp.cards.Length);
+            openedStackCards = new List<Card>(tramp.cards.Length);
             Initialize();
         }
-
         /// <summary>
         /// 初期化
         /// </summary>
@@ -148,25 +148,32 @@ namespace Solitaire
         /// <param name="card"></param>
         public void OpenStackCard()
         {
-            if (stackCards.Count == 0) return;
+            //  スタックしているカードがない場合
+            if (stackCards.Count == 0)
+            {
+
+                //  開かれているカードもない場合
+                if (openedStackCards.Count == 0) return;
+                
+                foreach (Card card in openedStackCards)
+                {
+                    card.open = false;
+                    cardPoint[card.index] = new System.Drawing.Point(-2, 0);
+                    basePanel.UpdateCard(card);
+                }
+                List<Card> emptyList = stackCards;
+                stackCards = openedStackCards;
+                openedStackCards = emptyList;
+                return;
+            }
 
             Card topStackCard = stackCards[0];
-
+            openedStackCards.Add(topStackCard);
 
             stackCards.Remove(topStackCard);
             cardPoint[topStackCard.index] = new System.Drawing.Point(-1, 0);
             basePanel.UpdateCard(topStackCard);
             topStackCard.open = true;
-
-            if (openStackCard != null)
-            {
-                stackCards.Add(openStackCard);
-                cardPoint[openStackCard.index] = new System.Drawing.Point(-2, 0);
-                basePanel.UpdateCard(openStackCard);
-                openStackCard.open = false;
-            }
-
-            openStackCard = topStackCard;
         }
         /// <summary>
         /// カードを重ねられるか
@@ -217,7 +224,6 @@ namespace Solitaire
                 return false;
             }
 
-
             System.Drawing.Point cardPoint = this.cardPoint[grabCards[0].index];
             List<Card> newLine = tableCards[lineIndex];
             if (cardPoint.X >= 0)
@@ -241,16 +247,19 @@ namespace Solitaire
                 Card card = grabCards[0];
                 System.Drawing.Point point = new System.Drawing.Point(lineIndex, newLine.Count);
                 this.cardPoint[card.index] = point;
-                openStackCard = null;
                 newLine.Add(card);
                 basePanel.UpdateCard(card);
 
                 OpenStackCard();
             }
 
+
             grabCards = null;
             return true;
         }
+        /// <summary>
+        /// 掴んでいるカードを戻す
+        /// </summary>
         private void ClearGrabCard()
         {
             for (int i = 0; i < grabCards.Length; i++)

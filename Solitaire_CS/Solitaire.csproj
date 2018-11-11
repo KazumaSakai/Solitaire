@@ -290,6 +290,8 @@
   <ItemGroup>
     <None Include="Resources\SolitaireBackGroundImage.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\empty.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
