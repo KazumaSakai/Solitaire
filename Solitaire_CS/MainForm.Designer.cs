@@ -45,7 +45,10 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::Solitaire.Resources.SolitaireBackGroundImage;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(648, 761);
+            this.Size = new System.Drawing.Size(625, 625);
+            this.Location = new System.Drawing.Point(100, 100);
+            this.MinimumSize = new System.Drawing.Size(625, 625);
+            this.MaximumSize = new System.Drawing.Size(625, 1000);
             this.DoubleBuffered = true;
             this.Name = "Form1";
             this.Text = "Solitaire";

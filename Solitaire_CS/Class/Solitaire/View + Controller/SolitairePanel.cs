@@ -26,7 +26,7 @@ namespace Solitaire
             this.BackColor = System.Drawing.Color.Transparent;
             this.Location = new System.Drawing.Point(0, 0);
             this.Name = "SolitairePanel";
-            this.Size = new System.Drawing.Size(624, 737);
+            this.Size = new System.Drawing.Size(620, 737);
             this.TabIndex = 0;
 
             this.Controls.Add(cardsBasePanel = new CardsBasePanel(model));
@@ -51,7 +51,7 @@ namespace Solitaire
                 panel.BringToFront();
             }
 
-            Cursor.Current = Cursors.Hand;
+            Cursor.Current = Cursors.Cross;
             (this.FindForm() as MainForm).timer.Tick += dragEventHandler;
 
         }
@@ -90,6 +90,13 @@ namespace Solitaire
         public void UpdateCard(Card card, bool toFront = true)
         {
             System.Drawing.Point point = model.cardPoint[card.index];
+
+            if(point.Y == -1)
+            {
+                card.formPanel.Location = new System.Drawing.Point(12 + (84 * (model.tableCards.Length - 4 + point.X)), 12);
+                if (toFront) card.formPanel.BringToFront();
+                return;
+            }
 
             switch (point.X)
             {
@@ -137,7 +144,7 @@ namespace Solitaire
                 this.BackColor = System.Drawing.Color.Transparent;
                 this.Location = new System.Drawing.Point(0, 0);
                 this.Name = "SolitaireCardsBasePanel";
-                this.Size = new System.Drawing.Size(624, 737);
+                this.Size = new System.Drawing.Size(620, 737);
                 this.TabIndex = 0;
 
                 for (int i = 0; i < model.tramp.cards.Length; i++)
@@ -158,15 +165,28 @@ namespace Solitaire
                     emptyCard = new EmptyCard(new System.Drawing.Point(12 + (84 * i), 150));
                     this.Controls.Add(emptyCard);
                 }
+
+                for (int i = 0; i < 4; i++)
+                {
+                    emptyCard = new EmptyCard(new System.Drawing.Point(12 + (84 * (model.tableCards.Length - 1 - i)), 12));
+                    this.Controls.Add(emptyCard);
+                }
             }
 
             private void ClickCardEvent(Card card)
             {
-                model.GrabCard(card);
+                if ((Control.MouseButtons & MouseButtons.Left) == MouseButtons.Left)
+                {
+                    model.GrabCard(card);
+                }
+                else if ((Control.MouseButtons & MouseButtons.Right) == MouseButtons.Right)
+                {
+                    model.FinishCard(card);
+                }
             }
             private void ClickStackCardEmpty()
             {
-                model.OpenStackCard();
+                model.OpenStockCard();
             }
 
             public class EmptyCard : Panel
@@ -185,6 +205,7 @@ namespace Solitaire
         {
             private Solitaire model;
             private Panel[] linePanels;
+            private Panel finishPanel;
 
             public DropPanel(Solitaire model)
             {
@@ -193,7 +214,7 @@ namespace Solitaire
                 this.BackColor = System.Drawing.Color.Transparent;
                 this.Location = new System.Drawing.Point(0, 0);
                 this.Name = "SolitaireDropPanel";
-                this.Size = new System.Drawing.Size(624, 737);
+                this.Size = new System.Drawing.Size(620, 737);
                 this.TabIndex = 0;
                 this.Visible = false;
 
@@ -208,17 +229,33 @@ namespace Solitaire
                     linePanels[i] = panel;
                     this.Controls.Add(panel);
                 }
+
+                finishPanel = new Panel();
+                finishPanel.BackColor = System.Drawing.Color.Transparent;
+                finishPanel.Location = new System.Drawing.Point(9 + (84 * (model.tableCards.Length - 4)), 9);
+                System.Drawing.Point endPoint = new System.Drawing.Point(15 + (84 * (model.tableCards.Length - 1)), 15);
+                finishPanel.Size = new System.Drawing.Size(endPoint.X - finishPanel.Location.X + 80, endPoint.Y - finishPanel.Location.Y + 120);
+                this.Controls.Add(finishPanel);
             }
 
             /// <summary>
             /// 座標からドロップした列を特定する
             /// </summary>
             /// <param name="point">座標</param>
-            /// <returns></returns>
+            /// <returns>失敗　-2</returns>
             public int DropedLine(System.Drawing.Point point)
             {
                 this.Visible = true;
+
                 Control hitControl = this.GetChildAtPoint(this.PointToClient(Cursor.Position));
+                if (hitControl == null) return -2;
+
+                if (hitControl == finishPanel)
+                {
+                    this.Visible = false;
+                    return -1;
+                }
+
                 for (int i = 0; i < linePanels.Length; i++)
                 {
                     if(hitControl == linePanels[i])
@@ -228,8 +265,9 @@ namespace Solitaire
                         return i;
                     }
                 }
+
                 this.Visible = false;
-                return -1;
+                return -2;
             }
         }
         public class DragPanel : Panel
