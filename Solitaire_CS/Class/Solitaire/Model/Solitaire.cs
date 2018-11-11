@@ -195,31 +195,28 @@ namespace Solitaire
             //  挿入先が存在しない場合
             if (lineIndex < 0 || lineIndex >= tableCards.Length)
             {
-                for (int i = 0; i < grabCards.Length; i++)
-                {
-                    basePanel.UpdateCard(grabCards[i]);
-                }
-                grabCards = null;
+                ClearGrabCard();
                 return false;
             }
 
             //  挿入する列にカードがあるか
-            if(tableCards[lineIndex].Count > 0)
+            if (tableCards[lineIndex].Count > 0)
             {
                 Card finalCard = tableCards[lineIndex].Last();
                 if (!CanStackCard(finalCard, grabCards[0]))
                 {
-                    for (int i = 0; i < grabCards.Length; i++)
-                    {
-                        basePanel.UpdateCard(grabCards[i]);
-                    }
-                    grabCards = null;
+                    ClearGrabCard();
                     return false;
                 }
             }
 
             //  空の列に挿入する場合、King以外は処理しない
-            else if (grabCards[0].number != 13) return false;
+            else if (grabCards[0].number != 13)
+            {
+                ClearGrabCard();
+                return false;
+            }
+
 
             System.Drawing.Point cardPoint = this.cardPoint[grabCards[0].index];
             List<Card> newLine = tableCards[lineIndex];
@@ -253,6 +250,14 @@ namespace Solitaire
 
             grabCards = null;
             return true;
+        }
+        private void ClearGrabCard()
+        {
+            for (int i = 0; i < grabCards.Length; i++)
+            {
+                basePanel.UpdateCard(grabCards[i]);
+            }
+            grabCards = null;
         }
 
         //
