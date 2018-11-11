@@ -168,7 +168,6 @@ namespace Solitaire
 
             openStackCard = topStackCard;
         }
-
         /// <summary>
         /// カードを重ねられるか
         /// </summary>
@@ -190,8 +189,10 @@ namespace Solitaire
         /// <returns></returns>
         public bool DropCard(int lineIndex)
         {
-            if (grabCards == null) return false;
-        
+            //  掴んでいるカードが存在しない
+            if (grabCards == null || grabCards.Length == 0) return false;
+            
+            //  挿入先が存在しない場合
             if (lineIndex < 0 || lineIndex >= tableCards.Length)
             {
                 for (int i = 0; i < grabCards.Length; i++)
@@ -202,6 +203,7 @@ namespace Solitaire
                 return false;
             }
 
+            //  挿入する列にカードがあるか
             if(tableCards[lineIndex].Count > 0)
             {
                 Card finalCard = tableCards[lineIndex].Last();
@@ -215,6 +217,9 @@ namespace Solitaire
                     return false;
                 }
             }
+
+            //  空の列に挿入する場合、King以外は処理しない
+            else if (grabCards[0].number != 13) return false;
 
             System.Drawing.Point cardPoint = this.cardPoint[grabCards[0].index];
             List<Card> newLine = tableCards[lineIndex];
