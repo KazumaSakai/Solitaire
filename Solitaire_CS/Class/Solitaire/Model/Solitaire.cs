@@ -57,12 +57,11 @@ namespace Solitaire
         public void Initialize()
         {
             tramp.Shuffle();
-
-
+        
             int num = 0;
             for (int i = 0; i < tableCards.Length; i++)
             {
-                for (int j = 0; j < (i + 3); j++)
+                for (int j = 0; j < (i + 1); j++)
                 {
                     bool isCardOpen = (i <= j);
 
@@ -116,7 +115,7 @@ namespace Solitaire
 
             System.Drawing.Point point = cardPoint[card.index];
 
-            if(point.X > 0)
+            if(point.X >= 0)
             {
                 List<Card> line = tableCards[point.X];
                 for (int i = point.Y + 1; i < line.Count; i++)
@@ -152,6 +151,7 @@ namespace Solitaire
             if (stackCards.Count == 0) return;
 
             Card topStackCard = stackCards[0];
+
 
             stackCards.Remove(topStackCard);
             cardPoint[topStackCard.index] = new System.Drawing.Point(-1, 0);
@@ -218,7 +218,7 @@ namespace Solitaire
 
             System.Drawing.Point cardPoint = this.cardPoint[grabCards[0].index];
             List<Card> newLine = tableCards[lineIndex];
-            if (cardPoint.X > 0)
+            if (cardPoint.X >= 0)
             {
                 List<Card> line = tableCards[cardPoint.X];
                 for (int i = 0; i < grabCards.Length; i++)
