@@ -11,7 +11,7 @@ namespace Solitaire
     {
         private Solitaire model;
 
-        private CardsBasePanel cardsBasePanel;
+        private ViewBasePanel cardsBasePanel;
         private DropPanel dropBasePanel;
         private DragPanel dragPanel;
 
@@ -26,14 +26,13 @@ namespace Solitaire
             this.BackColor = System.Drawing.Color.Transparent;
             this.Location = new System.Drawing.Point(0, 0);
             this.Name = "SolitairePanel";
-            this.Size = new System.Drawing.Size(620, 737);
+            this.Size = new System.Drawing.Size(625, 625);
             this.TabIndex = 0;
+            this.dragEventHandler = new EventHandler((object sender, EventArgs e) => DragCard());
 
-            this.Controls.Add(cardsBasePanel = new CardsBasePanel(model));
+            this.Controls.Add(cardsBasePanel = new ViewBasePanel(model));
             this.Controls.Add(dropBasePanel = new DropPanel(model));
             this.Controls.Add(dragPanel = new DragPanel());
-
-            this.dragEventHandler = new EventHandler((object sender, EventArgs e) => DragCard());
         }
 
         public void GrabCard(Card[] dragCards)
@@ -132,11 +131,12 @@ namespace Solitaire
             this.Size = new System.Drawing.Size(Parent.Size.Width - 42, Parent.Size.Height - 64);
         }
 
-        public class CardsBasePanel : Panel
+        public class ViewBasePanel : Panel
         {
             private Solitaire model;
+            private CommandPanel commandPanel;
 
-            public CardsBasePanel(Solitaire model)
+            public ViewBasePanel(Solitaire model)
             {
                 this.model = model;
 
@@ -144,7 +144,7 @@ namespace Solitaire
                 this.BackColor = System.Drawing.Color.Transparent;
                 this.Location = new System.Drawing.Point(0, 0);
                 this.Name = "SolitaireCardsBasePanel";
-                this.Size = new System.Drawing.Size(620, 737);
+                this.Size = new System.Drawing.Size(625, 625);
                 this.TabIndex = 0;
 
                 for (int i = 0; i < model.tramp.cards.Length; i++)
@@ -171,6 +171,8 @@ namespace Solitaire
                     emptyCard = new EmptyCard(new System.Drawing.Point(12 + (84 * (model.tableCards.Length - 1 - i)), 12));
                     this.Controls.Add(emptyCard);
                 }
+
+                this.Controls.Add(commandPanel = new CommandPanel(model));
             }
 
             private void ClickCardEvent(Card card)
@@ -198,6 +200,71 @@ namespace Solitaire
                     this.Size = new System.Drawing.Size(80, 120);
                     this.Location = point;
                     this.TabIndex = 0;
+                }
+            }
+            public class CommandPanel : Panel
+            {
+                Solitaire model;
+                Panel[] command;
+
+                ToolTip toolTip;
+                public CommandPanel(Solitaire model)
+                {
+                    this.model = model;
+
+                    this.BackColor = System.Drawing.Color.White;
+                    this.BorderStyle = BorderStyle.FixedSingle;
+                    this.Location = new System.Drawing.Point(509, 561);
+                    this.Name = "SolitaireCommnadPanel";
+                    this.Size = new System.Drawing.Size(100, 25);
+                    this.TabIndex = 0;
+
+                    toolTip = new ToolTip();
+                    toolTip.InitialDelay = 100;
+                    toolTip.ReshowDelay = 100;
+                    toolTip.AutoPopDelay = 10000;
+
+                    command = new Panel[4];
+                    for (int i = 0; i < command.Length; i++)
+                    {
+                        Panel panel = new Panel();
+
+                        panel.BackColor = System.Drawing.Color.White;
+                        panel.BorderStyle = BorderStyle.FixedSingle;
+                        panel.BackgroundImageLayout = ImageLayout.Stretch;
+                        panel.Location = new System.Drawing.Point(-1 + (25 * i), -1);
+                        panel.Name = "ReloadPanel";
+                        panel.Size = new System.Drawing.Size(26, 26);
+                        panel.TabIndex = 0;
+                        this.Controls.Add(panel);
+
+                        command[i] = panel;
+                    }
+
+                    command[0].BackgroundImage = Resources.plus;
+                    toolTip.SetToolTip(command[0], "新しく始める");
+
+                    command[1].BackgroundImage = Resources.reload;
+                    command[1].MouseDown += new MouseEventHandler(ClickSoundPanel);
+                    toolTip.SetToolTip(command[1], "最初からやり直す");
+
+                    command[2].BackgroundImage = Resources.soundOn;
+                    toolTip.SetToolTip(command[2], "効果音");
+
+                    command[3].BackgroundImage = Resources.hint;
+                    toolTip.SetToolTip(command[3], "ヒント");
+                }
+
+                private void ClickNewGamePanel(object sender, MouseEventArgs e)
+                {
+                }
+
+                private void ClickReStartPanel(object sender, MouseEventArgs e)
+                {
+                }
+
+                private void ClickSoundPanel(object sender, MouseEventArgs e)
+                {
                 }
             }
         }

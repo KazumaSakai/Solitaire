@@ -293,5 +293,20 @@
   <ItemGroup>
     <None Include="Resources\empty.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\reload.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\plus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\soundOff.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\soundOn.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\hint.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

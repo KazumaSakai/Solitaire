@@ -126,6 +126,8 @@ namespace Solitaire
 
             System.Drawing.Point point = cardPoint[card.index];
 
+            if (point.Y == -1) return false;
+
             if(point.X >= 0)
             {
                 List<Card> line = tableCards[point.X];
