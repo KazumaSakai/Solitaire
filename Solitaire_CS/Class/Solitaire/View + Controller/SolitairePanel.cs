@@ -88,11 +88,11 @@ namespace Solitaire
         }
         public void UpdateCard(Card card, bool toFront = true)
         {
-            System.Drawing.Point point = model.cardPoint[card.index];
+            System.Drawing.Point point = model.data.cardPoint[card.index];
 
             if(point.Y == -1)
             {
-                card.formPanel.Location = new System.Drawing.Point(12 + (84 * (model.tableCards.Length - 4 + point.X)), 12);
+                card.formPanel.Location = new System.Drawing.Point(12 + (84 * (model.data.tableCards.Length - 4 + point.X)), 12);
                 if (toFront) card.formPanel.BringToFront();
                 return;
             }
@@ -160,7 +160,7 @@ namespace Solitaire
                 emptyCard.MouseDown += new MouseEventHandler((object sender, MouseEventArgs e) => ClickStackCardEmpty());
                 this.Controls.Add(emptyCard);
 
-                for (int i = 0; i < model.tableCards.Length; i++)
+                for (int i = 0; i < model.data.tableCards.Length; i++)
                 {
                     emptyCard = new EmptyCard(new System.Drawing.Point(12 + (84 * i), 150));
                     this.Controls.Add(emptyCard);
@@ -168,7 +168,7 @@ namespace Solitaire
 
                 for (int i = 0; i < 4; i++)
                 {
-                    emptyCard = new EmptyCard(new System.Drawing.Point(12 + (84 * (model.tableCards.Length - 1 - i)), 12));
+                    emptyCard = new EmptyCard(new System.Drawing.Point(12 + (84 * (model.data.tableCards.Length - 1 - i)), 12));
                     this.Controls.Add(emptyCard);
                 }
 
@@ -242,10 +242,11 @@ namespace Solitaire
                     }
 
                     command[0].BackgroundImage = Resources.plus;
+                    command[0].MouseDown += new MouseEventHandler((object sender, MouseEventArgs e) => model.Initialize());
                     toolTip.SetToolTip(command[0], "新しく始める");
 
                     command[1].BackgroundImage = Resources.reload;
-                    command[1].MouseDown += new MouseEventHandler(ClickSoundPanel);
+                    command[1].MouseDown += new MouseEventHandler((object sender, MouseEventArgs e) => model.Restart());
                     toolTip.SetToolTip(command[1], "最初からやり直す");
 
                     command[2].BackgroundImage = Resources.soundOn;
@@ -253,18 +254,6 @@ namespace Solitaire
 
                     command[3].BackgroundImage = Resources.hint;
                     toolTip.SetToolTip(command[3], "ヒント");
-                }
-
-                private void ClickNewGamePanel(object sender, MouseEventArgs e)
-                {
-                }
-
-                private void ClickReStartPanel(object sender, MouseEventArgs e)
-                {
-                }
-
-                private void ClickSoundPanel(object sender, MouseEventArgs e)
-                {
                 }
             }
         }
@@ -285,7 +274,7 @@ namespace Solitaire
                 this.TabIndex = 0;
                 this.Visible = false;
 
-                linePanels = new Panel[model.tableCards.Length];
+                linePanels = new Panel[model.data.tableCards.Length];
                 for (int i = 0; i < linePanels.Length; i++)
                 {
                     Panel panel = new Panel();
@@ -299,8 +288,8 @@ namespace Solitaire
 
                 finishPanel = new Panel();
                 finishPanel.BackColor = System.Drawing.Color.Transparent;
-                finishPanel.Location = new System.Drawing.Point(9 + (84 * (model.tableCards.Length - 4)), 9);
-                System.Drawing.Point endPoint = new System.Drawing.Point(15 + (84 * (model.tableCards.Length - 1)), 15);
+                finishPanel.Location = new System.Drawing.Point(9 + (84 * (model.data.tableCards.Length - 4)), 9);
+                System.Drawing.Point endPoint = new System.Drawing.Point(15 + (84 * (model.data.tableCards.Length - 1)), 15);
                 finishPanel.Size = new System.Drawing.Size(endPoint.X - finishPanel.Location.X + 80, endPoint.Y - finishPanel.Location.Y + 120);
                 this.Controls.Add(finishPanel);
             }

@@ -16,27 +16,88 @@ namespace Solitaire
         /// トランプ
         /// </summary>
         public Tramp tramp;
-        /// <summary>
-        /// カードの位置
-        /// </summary>
-        public System.Drawing.Point[] cardPoint;
+        public Data data;
 
         /// <summary>
-        /// テーブル上のカード
+        /// データ
         /// </summary>
-        public List<Card>[] tableCards;
-        /// <summary>
-        /// 山札のカード
-        /// </summary>
-        public List<Card> stockCards;
-        /// <summary>
-        /// 開かれた山札のカード
-        /// </summary>
-        public List<Card> openedStockCards;
-        /// <summary>
-        /// 現在右上に積み重ねられているカードの番号
-        /// </summary>
-        public int[] finishNumber;
+        public struct Data
+        {
+            /// <summary>
+            /// カードの位置
+            /// </summary>
+            public System.Drawing.Point[] cardPoint;
+            /// <summary>
+            /// テーブル上のカード
+            /// </summary>
+            public List<Card>[] tableCards;
+            /// <summary>
+            /// 山札のカード
+            /// </summary>
+            public List<Card> stockCards;
+            /// <summary>
+            /// 開かれた山札のカード
+            /// </summary>
+            public List<Card> openedStockCards;
+            /// <summary>
+            /// 現在右上に積み重ねられているカードの番号
+            /// </summary>
+            public int[] finishNumber;
+
+            public Data(int cardLength, int tableLength)
+            {
+                cardPoint = new System.Drawing.Point[cardLength];
+                stockCards = new List<Card>(cardLength);
+                openedStockCards = new List<Card>(cardLength);
+                finishNumber = new int[4];
+
+                tableCards = new List<Card>[tableLength];
+                for (int i = 0; i < tableCards.Length; i++)
+                {
+                    tableCards[i] = new List<Card>();
+                }
+            }
+
+            public void Initialize(Tramp tramp)
+            {
+                stockCards.Clear();
+                openedStockCards.Clear();
+                for (int i = 0; i < finishNumber.Length; i++)
+                {
+                    finishNumber[i] = 0;
+                }
+
+                int num = 0;
+                for (int i = 0; i < tableCards.Length; i++)
+                {
+                    tableCards[i].Clear();
+                    for (int j = 0; j < (i + 1); j++)
+                    {
+                        bool isCardOpen = (i <= j);
+
+                        Card card = tramp.cards[num];
+
+                        System.Drawing.Point point = new System.Drawing.Point(i, j);
+                        cardPoint[card.index] = point;
+                        tableCards[i].Add(card);
+                        card.open = isCardOpen;
+
+                        num++;
+                    }
+                }
+
+                for (int i = num; i < tramp.cards.Length; i++)
+                {
+                    Card card = tramp.cards[i];
+
+                    System.Drawing.Point point = new System.Drawing.Point(-2, 0);
+                    cardPoint[card.index] = point;
+
+                    stockCards.Add(card);
+                    card.open = false;
+                }
+            }
+        }
 
         /// <summary>
         /// コンストラクタ
@@ -45,15 +106,7 @@ namespace Solitaire
         {            
             tramp = new Tramp();
             tramp.Shuffle();
-            tableCards = new List<Card>[7];
-            cardPoint = new System.Drawing.Point[52];
-            for (int i = 0; i < tableCards.Length; i++)
-            {
-                tableCards[i] = new List<Card>();
-            }
-            stockCards = new List<Card>(tramp.cards.Length);
-            openedStockCards = new List<Card>(tramp.cards.Length);
-            finishNumber = new int[4];
+            data = new Data(52, 7);
 
             Initialize();
         }
@@ -63,39 +116,18 @@ namespace Solitaire
         public void Initialize()
         {
             tramp.Shuffle();
-        
-            int num = 0;
-            for (int i = 0; i < tableCards.Length; i++)
+            Restart();
+        }
+        /// <summary>
+        /// 最初からやり直す
+        /// </summary>
+        public void Restart()
+        {
+            data.Initialize(tramp);
+
+            if (basePanel != null)
             {
-                for (int j = 0; j < (i + 1); j++)
-                {
-                    bool isCardOpen = (i <= j);
-
-                    Card card = tramp.cards[num];
-
-                    System.Drawing.Point point = new System.Drawing.Point(i, j);
-                    cardPoint[card.index] = point;
-                    tableCards[i].Add(card);
-                    card.open = isCardOpen;
-                
-                    num++;
-                }
-            }
-
-            for (int i = 0; i < finishNumber.Length; i++)
-            {
-                finishNumber[i] = 0;
-            }
-
-            for (int i = num; i < tramp.cards.Length; i++)
-            {
-                Card card = tramp.cards[i];
-
-                System.Drawing.Point point = new System.Drawing.Point(-2, 0);
-                cardPoint[card.index] = point;
-
-                stockCards.Add(card);
-                card.open = false;
+                basePanel.UpdateAllCard();
             }
         }
 
@@ -113,7 +145,7 @@ namespace Solitaire
             if (card == null) return false;
             if (!card.open)
             {
-                if(cardPoint[card.index].X == -2)
+                if(data.cardPoint[card.index].X == -2)
                 {
                     OpenStockCard();
                     return false;
@@ -124,13 +156,13 @@ namespace Solitaire
                 }
             }
 
-            System.Drawing.Point point = cardPoint[card.index];
+            System.Drawing.Point point = data.cardPoint[card.index];
 
             if (point.Y == -1) return false;
 
             if(point.X >= 0)
             {
-                List<Card> line = tableCards[point.X];
+                List<Card> line = data.tableCards[point.X];
                 for (int i = point.Y + 1; i < line.Count; i++)
                 {
                     Card nextCard = line[i];
@@ -162,29 +194,29 @@ namespace Solitaire
         public void OpenStockCard()
         {
             //  スタックしているカードがない場合
-            if (stockCards.Count == 0)
+            if (data.stockCards.Count == 0)
             {
 
                 //  開かれているカードもない場合
-                if (openedStockCards.Count == 0) return;
+                if (data.openedStockCards.Count == 0) return;
                 
-                foreach (Card card in openedStockCards)
+                foreach (Card card in data.openedStockCards)
                 {
                     card.open = false;
-                    cardPoint[card.index] = new System.Drawing.Point(-2, 0);
+                    data.cardPoint[card.index] = new System.Drawing.Point(-2, 0);
                     basePanel.UpdateCard(card);
                 }
-                List<Card> emptyList = stockCards;
-                stockCards = openedStockCards;
-                openedStockCards = emptyList;
+                List<Card> emptyList = data.stockCards;
+                data.stockCards = data.openedStockCards;
+                data.openedStockCards = emptyList;
                 return;
             }
 
-            Card topStockCard = stockCards[0];
-            openedStockCards.Add(topStockCard);
+            Card topStockCard = data.stockCards[0];
+            data.openedStockCards.Add(topStockCard);
 
-            stockCards.Remove(topStockCard);
-            cardPoint[topStockCard.index] = new System.Drawing.Point(-1, 0);
+            data.stockCards.Remove(topStockCard);
+            data.cardPoint[topStockCard.index] = new System.Drawing.Point(-1, 0);
             basePanel.UpdateCard(topStockCard);
             topStockCard.open = true;
         }
@@ -213,7 +245,7 @@ namespace Solitaire
             if (grabCards == null || grabCards.Length == 0) return false;
             
             //  挿入先が存在しない場合
-            if (lineIndex < -1 || lineIndex >= tableCards.Length)
+            if (lineIndex < -1 || lineIndex >= data.tableCards.Length)
             {
                 ClearGrabCard();
                 return false;
@@ -227,9 +259,9 @@ namespace Solitaire
             }
 
             //  挿入する列にカードがあるか
-            if (tableCards[lineIndex].Count > 0)
+            if (data.tableCards[lineIndex].Count > 0)
             {
-                Card finalCard = tableCards[lineIndex].Last();
+                Card finalCard = data.tableCards[lineIndex].Last();
                 if (!CanStackCard(finalCard, grabCards[0]))
                 {
                     ClearGrabCard();
@@ -244,17 +276,17 @@ namespace Solitaire
                 return false;
             }
 
-            System.Drawing.Point cardPoint = this.cardPoint[grabCards[0].index];
-            List<Card> newLine = tableCards[lineIndex];
+            System.Drawing.Point cardPoint = this.data.cardPoint[grabCards[0].index];
+            List<Card> newLine = data.tableCards[lineIndex];
             if (cardPoint.X >= 0)
             {
-                List<Card> line = tableCards[cardPoint.X];
+                List<Card> line = data.tableCards[cardPoint.X];
                 for (int i = 0; i < grabCards.Length; i++)
                 {
                     Card card = grabCards[i];
 
                     System.Drawing.Point point = new System.Drawing.Point(lineIndex, newLine.Count);
-                    this.cardPoint[card.index] = point;
+                    this.data.cardPoint[card.index] = point;
                     line.Remove(card);
                     newLine.Add(card);
 
@@ -266,8 +298,8 @@ namespace Solitaire
             {
                 Card card = grabCards[0];
                 System.Drawing.Point point = new System.Drawing.Point(lineIndex, newLine.Count);
-                this.cardPoint[card.index] = point;
-                openedStockCards.Remove(card);
+                this.data.cardPoint[card.index] = point;
+                data.openedStockCards.Remove(card);
                 newLine.Add(card);
                 basePanel.UpdateCard(card);
             }
@@ -294,24 +326,24 @@ namespace Solitaire
         public bool FinishCard(Card card)
         {
             int mark = (int)card.mark;
-            if (finishNumber[mark] != card.number - 1)
+            if (data.finishNumber[mark] != card.number - 1)
             {
                 basePanel.UpdateCard(card);
                 return false;
             }
-            finishNumber[mark]++;
+            data.finishNumber[mark]++;
 
-            System.Drawing.Point point = cardPoint[card.index];
+            System.Drawing.Point point = data.cardPoint[card.index];
             if(point.X >= 0)
             {
-                tableCards[point.X].Remove(card);
-                if (tableCards[point.X].Count > 0) tableCards[point.X].Last().open = true;
+                data.tableCards[point.X].Remove(card);
+                if (data.tableCards[point.X].Count > 0) data.tableCards[point.X].Last().open = true;
             }
             else if(point.X == -1)
             {
-                openedStockCards.Remove(card);
+                data.openedStockCards.Remove(card);
             }
-            cardPoint[card.index] = new System.Drawing.Point(mark, -1);
+            data.cardPoint[card.index] = new System.Drawing.Point(mark, -1);
             basePanel.UpdateCard(card);
             return true;
         }
