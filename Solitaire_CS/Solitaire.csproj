@@ -67,6 +67,9 @@
   <ItemGroup>
     <Compile Include="Class\Solitaire\Model\Card.cs" />
     <Compile Include="Class\Solitaire\Model\Solitaire.cs" />
+    <Compile Include="Class\Solitaire\View + Controller\CardPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Class\Solitaire\View + Controller\SolitairePanel.cs">
       <SubType>Component</SubType>
     </Compile>

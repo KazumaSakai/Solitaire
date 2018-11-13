@@ -78,7 +78,7 @@ namespace Solitaire
         }
 
         /// <summary>
-        /// デバッグ出力
+        /// トランプの情報をコンソールに出力する
         /// </summary>
         public void DebugOutput()
         {

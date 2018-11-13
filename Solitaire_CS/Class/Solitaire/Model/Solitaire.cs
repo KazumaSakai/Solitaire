@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Solitaire
 {
+    /// <summary>
+    /// Solitaireモデル
+    /// </summary>
     public class Solitaire : IFormPanel
     {
         //
@@ -16,7 +17,10 @@ namespace Solitaire
         /// トランプ
         /// </summary>
         public Tramp tramp;
-        public Data data;
+        /// <summary>
+        /// ドラッグ中のカード
+        /// </summary>
+        private Card[] grabCards;
 
         /// <summary>
         /// データ
@@ -98,6 +102,11 @@ namespace Solitaire
                 }
             }
         }
+        /// <summary>
+        /// ゲームのデータ
+        /// </summary>
+        public Data data;
+
 
         /// <summary>
         /// コンストラクタ
@@ -130,11 +139,6 @@ namespace Solitaire
                 basePanel.UpdateAllCard();
             }
         }
-
-        /// <summary>
-        /// ドラッグ中のカード
-        /// </summary>
-        Card[] grabCards;
         /// <summary>
         /// カードをつかむ
         /// </summary>
@@ -347,6 +351,7 @@ namespace Solitaire
             basePanel.UpdateCard(card);
             return true;
         }
+
 
         //
         //  View + Controller

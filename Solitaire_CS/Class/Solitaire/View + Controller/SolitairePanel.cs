@@ -7,17 +7,42 @@ using System.Windows.Forms;
 
 namespace Solitaire
 {
+    /// <summary>
+    /// Solitaireの[View + Controller]
+    /// </summary>
     public class SolitairePanel : Panel
     {
+        /// <summary>
+        /// Solitaireモデル
+        /// </summary>
         private Solitaire model;
 
+        /// <summary>
+        /// カードを表示したりするパネル
+        /// </summary>
         private ViewBasePanel cardsBasePanel;
+        /// <summary>
+        /// ドロップした時用の当たり判定
+        /// </summary>
         private DropPanel dropBasePanel;
+        /// <summary>
+        /// ドラッグするときカードをまとめるパネル
+        /// </summary>
         private DragPanel dragPanel;
 
+        /// <summary>
+        /// カードをつかむポイント
+        /// </summary>
         private System.Drawing.Point grabPoint;
+        /// <summary>
+        /// ドラッグ中に呼ぶイベント
+        /// </summary>
         private EventHandler dragEventHandler;
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="model">モデル</param>
         public SolitairePanel(Solitaire model)
         {
             this.model = model;
@@ -35,6 +60,10 @@ namespace Solitaire
             this.Controls.Add(dragPanel = new DragPanel());
         }
 
+        /// <summary>
+        /// カードを掴む
+        /// </summary>
+        /// <param name="dragCards">掴んだカード</param>
         public void GrabCard(Card[] dragCards)
         {
             dragPanel.Size = new System.Drawing.Size(80, 90 + (30 * (dragCards.Length)));
@@ -54,7 +83,10 @@ namespace Solitaire
             (this.FindForm() as MainForm).timer.Tick += dragEventHandler;
 
         }
-        public void DragCard()
+        /// <summary>
+        /// カードをドラッグしている
+        /// </summary>
+        private void DragCard()
         {
             if ((Control.MouseButtons & MouseButtons.Left) == MouseButtons.Left)
             {
@@ -66,11 +98,17 @@ namespace Solitaire
                 (this.FindForm() as MainForm).timer.Tick -= dragEventHandler;
             }
         }
-        public void MoveDragCard()
+        /// <summary>
+        /// 掴んだカードを動かした時
+        /// </summary>
+        private void MoveDragCard()
         {
             dragPanel.Location = dragPanel.Parent.PointToClient(new System.Drawing.Point(Cursor.Position.X - grabPoint.X, Cursor.Position.Y - grabPoint.Y));
         }
-        public void DropCard()
+        /// <summary>
+        /// カードをドロップした時
+        /// </summary>
+        private void DropCard()
         {
             dragPanel.SendToBack();
             dragPanel.Location = new System.Drawing.Point(0, 0);
@@ -83,9 +121,14 @@ namespace Solitaire
 
             Cursor.Current = Cursors.Default;
 
-            int targeLine = dropBasePanel.DropedLine(Cursor.Position);
+            int targeLine = dropBasePanel.FindDropedLine(Cursor.Position);
             model.DropCard(targeLine);
         }
+        /// <summary>
+        /// カードの位置を更新する
+        /// </summary>
+        /// <param name="card">対象のカード</param>
+        /// <param name="toFront">前に出すか</param>
         public void UpdateCard(Card card, bool toFront = true)
         {
             System.Drawing.Point point = model.data.cardPoint[card.index];
@@ -113,6 +156,9 @@ namespace Solitaire
             }
             if (toFront) card.formPanel.BringToFront();
         }
+        /// <summary>
+        /// すべてのカードを更新する
+        /// </summary>
         public void UpdateAllCard()
         {
             for (int i = 0; i < model.tramp.cards.Length; i++)
@@ -130,12 +176,25 @@ namespace Solitaire
         {
             this.Size = new System.Drawing.Size(Parent.Size.Width - 42, Parent.Size.Height - 64);
         }
-
-        public class ViewBasePanel : Panel
+        
+        /// <summary>
+        /// カードを表示したりする基本的なパネル
+        /// </summary>
+        private class ViewBasePanel : Panel
         {
+            /// <summary>
+            /// Solitaireモデル
+            /// </summary>
             private Solitaire model;
+            /// <summary>
+            /// コマンドのパネル
+            /// </summary>
             private CommandPanel commandPanel;
 
+            /// <summary>
+            /// コンストラクタ
+            /// </summary>
+            /// <param name="model">モデル</param>
             public ViewBasePanel(Solitaire model)
             {
                 this.model = model;
@@ -152,7 +211,7 @@ namespace Solitaire
                     Card card = model.tramp.cards[i];
                     Panel cardPanel = card.formPanel;
                     cardPanel.Name = i.ToString();
-                    cardPanel.MouseDown += new MouseEventHandler((object sender, MouseEventArgs e) => ClickCardEvent(card));
+                    cardPanel.MouseDown += new MouseEventHandler((object sender, MouseEventArgs e) => ClickCard(card));
                     this.Controls.Add(cardPanel);
                 }
 
@@ -175,7 +234,11 @@ namespace Solitaire
                 this.Controls.Add(commandPanel = new CommandPanel(model));
             }
 
-            private void ClickCardEvent(Card card)
+            /// <summary>
+            /// カードをクリックした時
+            /// </summary>
+            /// <param name="card"></param>
+            private void ClickCard(Card card)
             {
                 if ((Control.MouseButtons & MouseButtons.Left) == MouseButtons.Left)
                 {
@@ -186,11 +249,17 @@ namespace Solitaire
                     model.FinishCard(card);
                 }
             }
+            /// <summary>
+            /// 空になった山札をクリックしたとき
+            /// </summary>
             private void ClickStackCardEmpty()
             {
                 model.OpenStockCard();
             }
 
+            /// <summary>
+            /// カードが何もないという状態を表すパネル
+            /// </summary>
             public class EmptyCard : Panel
             {
                 public EmptyCard(System.Drawing.Point point)
@@ -202,12 +271,24 @@ namespace Solitaire
                     this.TabIndex = 0;
                 }
             }
+            /// <summary>
+            /// ゲームのリスタートなどのコマンドを追加する
+            /// </summary>
             public class CommandPanel : Panel
             {
+                /// <summary>
+                /// Solitaireモデル
+                /// </summary>
                 Solitaire model;
+                /// <summary>
+                /// 各コマンドのパネル
+                /// </summary>
                 Panel[] command;
-
+                /// <summary>
+                /// コマンドの説明
+                /// </summary>
                 ToolTip toolTip;
+
                 public CommandPanel(Solitaire model)
                 {
                     this.model = model;
@@ -257,10 +338,22 @@ namespace Solitaire
                 }
             }
         }
-        public class DropPanel : Panel
+        /// <summary>
+        /// カードをドロップする箇所の当たり判定
+        /// </summary>
+        private class DropPanel : Panel
         {
+            /// <summary>
+            /// Solitaireモデル
+            /// </summary>
             private Solitaire model;
+            /// <summary>
+            /// 各行のパネル
+            /// </summary>
             private Panel[] linePanels;
+            /// <summary>
+            /// 完了したカードが並ぶパネル
+            /// </summary>
             private Panel finishPanel;
 
             public DropPanel(Solitaire model)
@@ -299,7 +392,7 @@ namespace Solitaire
             /// </summary>
             /// <param name="point">座標</param>
             /// <returns>失敗　-2</returns>
-            public int DropedLine(System.Drawing.Point point)
+            public int FindDropedLine(System.Drawing.Point point)
             {
                 this.Visible = true;
 
@@ -326,7 +419,10 @@ namespace Solitaire
                 return -2;
             }
         }
-        public class DragPanel : Panel
+        /// <summary>
+        /// ドラッグしたカードをひとまとめにしておくパネル
+        /// </summary>
+        private class DragPanel : Panel
         {
             public DragPanel()
             {

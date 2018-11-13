@@ -10,8 +10,8 @@
 
 namespace Solitaire {
     using System;
-    
-    
+
+
     /// <summary>
     ///   ローカライズされた文字列などを検索するための、厳密に型指定されたリソース クラスです。
     /// </summary>
@@ -23,15 +23,15 @@ namespace Solitaire {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
-        
+
         private static global::System.Resources.ResourceManager resourceMan;
-        
+
         private static global::System.Globalization.CultureInfo resourceCulture;
-        
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal Resources() {
         }
-        
+
         /// <summary>
         ///   このクラスで使用されているキャッシュされた ResourceManager インスタンスを返します。
         /// </summary>
@@ -45,7 +45,7 @@ namespace Solitaire {
                 return resourceMan;
             }
         }
-        
+
         /// <summary>
         ///   すべてについて、現在のスレッドの CurrentUICulture プロパティをオーバーライドします
         ///   現在のスレッドの CurrentUICulture プロパティをオーバーライドします。
@@ -59,7 +59,8 @@ namespace Solitaire {
                 resourceCulture = value;
             }
         }
-        
+
+
         /// <summary>
         ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
         /// </summary>
@@ -688,6 +689,13 @@ namespace Solitaire {
                 object obj = ResourceManager.GetObject("z02", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
+        }
+
+        internal static string[] cardMark = new string[] { "s", "h", "c", "d" };
+        internal static System.Drawing.Bitmap GetCard(Card.Mark mark, int number)
+        {
+            object obj = ResourceManager.GetObject(cardMark[(int)mark] + number.ToString("00"), resourceCulture);
+            return ((System.Drawing.Bitmap)(obj));
         }
     }
 }
