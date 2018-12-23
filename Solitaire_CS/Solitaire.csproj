@@ -65,26 +65,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class\Solitaire\Model\Card.cs" />
-    <Compile Include="Class\Solitaire\Model\Solitaire.cs" />
-    <Compile Include="Class\Solitaire\View + Controller\CardPanel.cs">
+    <Compile Include="Library\Solitaire\Model\Card.cs" />
+    <Compile Include="Library\Solitaire\Model\Solitaire.cs" />
+    <Compile Include="Library\Solitaire\View + Controller\CardPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Class\Solitaire\View + Controller\SolitairePanel.cs">
+    <Compile Include="Library\Solitaire\View + Controller\SolitairePanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Class\Solitaire\Model\Trump.cs" />
-    <Compile Include="MainForm.cs">
+    <Compile Include="Library\Solitaire\Model\Trump.cs" />
+    <Compile Include="View\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
+    <Compile Include="View\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Interface\IDebugOutput.cs" />
     <Compile Include="Interface\IFormPanel.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Class\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="MainForm.resx">
+    <EmbeddedResource Include="View\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

@@ -10,7 +10,7 @@ namespace Solitaire
 {
     public class CardPanel : Panel
     {
-        Card model;
+        private Card model;
 
         public CardPanel(Card model)
         {
