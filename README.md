@@ -1,18 +1,21 @@
-## ����
-�g�����v�Q�[���u�\���e�B�A�v��C#�t�H�[���A�v���P�[�V�����ō쐬�����v���O�����ł��B
+## 概要
+トランプゲーム「ソリティア」をC#フォームアプリケーションで作成したプログラムです。
 
-## �ړI
-�E�t�H�[���A�v���P�[�V�����̗��K
+## 目的
+・フォームアプリケーションの練習
 
-## �o��
-�E�����r��  
+## 経過
+・実装途中  
 
-## �J���\��
-�E���ʉ�  
-�E�q���g  
-�EWPF�ł̎���  
-�E�J�[�h���쎞�ȂǁA�s��̏C��  
-�E���t�@�N�^�����O  
+## 開発予定
+・効果音  
+・ヒント  
+・WPFでの実装  
+・カード操作時など、不具合の修正  
+・リファクタリング  
 
-## �_�E�����[�h
+## ダウンロード
 [Ver1.0.0](https://github.com/KazumaSakai/Solitaire/releases/tag/1.0.0)
+
+## 他に作成したプロジェクト
+ - [ポートフォリオ](https://github.com/KazumaSakai/Portfolio)
